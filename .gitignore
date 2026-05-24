@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Local env
+.env
+.env.local
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Output of a brief run targeting THIS repo (rare; daily_brief is normally
+# pointed at other projects). Each project gets its own .brief/ in its own root.
+.brief/
