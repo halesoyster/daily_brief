@@ -96,21 +96,28 @@ Brief HTML is saved to `<project>/.brief/<YYYY-MM-DD>.html`. Coverage log at `<p
 
 ## Schedule it (macOS LaunchAgent)
 
-A LaunchAgent template + installer ships separately (Phase 3 of the daily_brief migration — see roadmap). For now, if you want a daily run, point an existing LaunchAgent (or cron job) at:
-
 ```bash
-daily-brief --project /absolute/path/to/your/project --email --no-open
+# install — fires at 9am against the specified project
+bash install.sh /absolute/path/to/your/project
+
+# test immediately
+launchctl kickstart -p gui/$(id -u)/com.daily-brief
+
+# check logs
+tail -f ~/Library/Logs/daily-brief/run.log
 ```
 
-**Important on macOS:** if your project lives inside `~/Documents/`, `~/Downloads/`, or `~/Desktop/`, launchd-spawned processes will be blocked by macOS TCC from reading the project files. Move the project to `~/Projects/`, `~/dev/`, or any location outside the protected directories.
+`install.sh` rewrites path placeholders in `com.daily-brief.plist` and bootstraps via the modern `launchctl bootstrap` API (the legacy `launchctl load` silently no-ops on recent macOS).
+
+**Important on macOS:** launchd-spawned processes cannot read `~/Documents/`, `~/Downloads/`, or `~/Desktop/` due to TCC restrictions. Keep your project in `~/Projects/`, `~/dev/`, or any non-protected location.
 
 ---
 
 ## Status
 
-- **v0.1 (current):** Extraction from `moon_baby/scripts/morning_brief.py`. Auto-detects moon_baby vs. generic projects. Email delivery via Gmail SMTP. No standalone LaunchAgent yet.
-- **v0.2 (next):** YAML per-project config file (`.daily-brief.yaml`) replacing hardcoded defaults. Generic LaunchAgent installer.
-- **v0.3 (later):** Cut over moon_baby's LaunchAgent to invoke daily_brief instead of in-tree script. Decide whether to delete morning brief code from moon_baby.
+- **v0.1:** Extraction from `moon_baby/scripts/morning_brief.py`. Auto-detects moon_baby vs. generic projects. Email delivery via Gmail SMTP.
+- **v0.2 (next):** YAML per-project config file (`.daily-brief.yaml`) replacing hardcoded defaults. Allows any project to configure curriculum, sprint state files, and audience framing without editing `daily_brief.py`.
+- **v0.3 (done):** Standalone `run.sh` + `install.sh` + plist template. LaunchAgent cut over from moon_baby's in-tree script. morning_brief.py removed from moon_baby.
 
 ---
 
