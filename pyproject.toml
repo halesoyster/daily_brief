@@ -1,0 +1,26 @@
+[project]
+name = "daily-brief"
+version = "0.1.0"
+description = "Daily HTML brief synthesizer — Claude-powered morning standup for any code project"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Hale Oyster" }]
+license = { text = "MIT" }
+keywords = ["briefing", "standup", "claude", "anthropic", "developer-tools"]
+
+dependencies = [
+    "anthropic>=0.39",
+]
+
+[project.scripts]
+daily-brief = "daily_brief:main"
+
+[project.urls]
+Repository = "https://github.com/halesoyster/daily_brief"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["daily_brief"]

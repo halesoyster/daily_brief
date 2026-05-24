@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  daily_brief — macOS LaunchAgent template.
+
+  Fires daily at 9am local time. Run install.sh to install — it rewrites
+  __DAILY_BRIEF_ROOT__ and __HOME__ to absolute paths before copying to
+  ~/Library/LaunchAgents/.
+
+  Uninstall:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.daily-brief.plist
+    rm ~/Library/LaunchAgents/com.daily-brief.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.daily-brief</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__DAILY_BRIEF_ROOT__/run.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>__HOME__/Library/Logs/daily-brief/launchd-stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOME__/Library/Logs/daily-brief/launchd-stderr.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+        <key>DAILY_BRIEF_PROJECT</key>
+        <string>__DAILY_BRIEF_PROJECT__</string>
+    </dict>
+</dict>
+</plist>
