@@ -51,73 +51,9 @@ import yaml
 # ---------------------------------------------------------------------------
 # Project configurations
 # ---------------------------------------------------------------------------
-# These dicts encode per-project knobs the brief generator needs:
-#   - file_extensions: which file types count for spotlight rotation
-#   - sprint_state_files: docs to surface as "current sprint state" context
-#   - roadmap_file: a single roadmap doc to excerpt
-#   - curriculum: fallback spotlight rotation when no recent changes warrant one
-#   - audience_description / goal_description: shape the system prompt
-#
-# load_project_config() looks for .daily-brief.yaml in the project root.
-# GENERIC_CONFIG is the fallback for projects with no config file.
-
-MOON_BABY_CONFIG: dict[str, Any] = {
-    "name": "moon_baby",
-    "file_extensions": (".py", ".sql", ".md", ".html"),
-    "sprint_state_files": [
-        "docs/sprint2-progress.md",
-        "docs/sprint2-brief.md",
-    ],
-    "roadmap_file": "docs/roadmap.md",
-    "audience_description": (
-        "Hale (familiar with SQL/dbt/data warehouses; growing into "
-        "FastAPI/asyncio/Postgres-as-application-DB territory; needs "
-        "deep technical fluency for his portfolio narrative)"
-    ),
-    "goal_description": "interview prep disguised as a morning standup",
-    "curriculum": [
-        {
-            "id": "schema",
-            "label": "Database schema + RLS",
-            "files": ["data/schema.sql", "data/migrations/001_app_role.sql"],
-        },
-        {
-            "id": "rls_middleware",
-            "label": "RLS middleware + the moon_baby_app role",
-            "files": ["api/middleware.py", "docs/issues/rls-enforcement.md"],
-        },
-        {
-            "id": "agent_loop",
-            "label": "Agent loop — system prompt + Claude call + parse",
-            "files": ["api/agent.py", "agent/system_prompt.py"],
-        },
-        {
-            "id": "db_layer",
-            "label": "Database layer — asyncpg pool + helpers",
-            "files": ["api/db.py"],
-        },
-        {
-            "id": "feed_gap",
-            "label": "First detector — feed_gap pattern",
-            "files": ["detectors/feed_gap.py"],
-        },
-        {
-            "id": "provisioning",
-            "label": "Family provisioning script",
-            "files": ["scripts/provision_user.py"],
-        },
-        {
-            "id": "webhook",
-            "label": "Telegram webhook + voice transcription",
-            "files": ["api/main.py"],
-        },
-        {
-            "id": "data_models",
-            "label": "Pydantic models — the typed contract layer",
-            "files": ["data/models.py"],
-        },
-    ],
-}
+# load_project_config() reads .daily-brief.yaml from the project root.
+# GENERIC_CONFIG is the in-code fallback for projects with no config file.
+# Schema documented in README.md.
 
 GENERIC_CONFIG: dict[str, Any] = {
     "name": "project",
