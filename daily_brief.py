@@ -26,9 +26,9 @@ Run:
 
 Cost: roughly one Claude API call per run. Sonnet 4.6, ~$0.10/day.
 
-Per-project behavior is currently determined by lightweight auto-detection
-(reads <project>/CLAUDE.md and looks for known fingerprints). v0.2 will
-replace this with a YAML config file (.daily-brief.yaml) per project.
+Per-project behavior is configured via a .daily-brief.yaml file in the
+project root. If none is found, a generic fallback is used. See README
+for the full schema.
 """
 
 from __future__ import annotations
@@ -46,77 +46,14 @@ from pathlib import Path
 from typing import Any
 
 import anthropic
+import yaml
 
 # ---------------------------------------------------------------------------
 # Project configurations
 # ---------------------------------------------------------------------------
-# These dicts encode per-project knobs the brief generator needs:
-#   - file_extensions: which file types count for spotlight rotation
-#   - sprint_state_files: docs to surface as "current sprint state" context
-#   - roadmap_file: a single roadmap doc to excerpt
-#   - curriculum: fallback spotlight rotation when no recent changes warrant one
-#   - audience_description / goal_description: shape the system prompt
-#
-# v0.1 picks the right config via detect_project_config() based on a project's
-# CLAUDE.md. v0.2 replaces this with a YAML config file in the project root.
-
-MOON_BABY_CONFIG: dict[str, Any] = {
-    "name": "moon_baby",
-    "file_extensions": (".py", ".sql", ".md", ".html"),
-    "sprint_state_files": [
-        "docs/sprint2-progress.md",
-        "docs/sprint2-brief.md",
-    ],
-    "roadmap_file": "docs/roadmap.md",
-    "audience_description": (
-        "Hale (familiar with SQL/dbt/data warehouses; growing into "
-        "FastAPI/asyncio/Postgres-as-application-DB territory; needs "
-        "deep technical fluency for his portfolio narrative)"
-    ),
-    "goal_description": "interview prep disguised as a morning standup",
-    "curriculum": [
-        {
-            "id": "schema",
-            "label": "Database schema + RLS",
-            "files": ["data/schema.sql", "data/migrations/001_app_role.sql"],
-        },
-        {
-            "id": "rls_middleware",
-            "label": "RLS middleware + the moon_baby_app role",
-            "files": ["api/middleware.py", "docs/issues/rls-enforcement.md"],
-        },
-        {
-            "id": "agent_loop",
-            "label": "Agent loop — system prompt + Claude call + parse",
-            "files": ["api/agent.py", "agent/system_prompt.py"],
-        },
-        {
-            "id": "db_layer",
-            "label": "Database layer — asyncpg pool + helpers",
-            "files": ["api/db.py"],
-        },
-        {
-            "id": "feed_gap",
-            "label": "First detector — feed_gap pattern",
-            "files": ["detectors/feed_gap.py"],
-        },
-        {
-            "id": "provisioning",
-            "label": "Family provisioning script",
-            "files": ["scripts/provision_user.py"],
-        },
-        {
-            "id": "webhook",
-            "label": "Telegram webhook + voice transcription",
-            "files": ["api/main.py"],
-        },
-        {
-            "id": "data_models",
-            "label": "Pydantic models — the typed contract layer",
-            "files": ["data/models.py"],
-        },
-    ],
-}
+# load_project_config() reads .daily-brief.yaml from the project root.
+# GENERIC_CONFIG is the in-code fallback for projects with no config file.
+# Schema documented in README.md.
 
 GENERIC_CONFIG: dict[str, Any] = {
     "name": "project",
@@ -134,17 +71,21 @@ GENERIC_CONFIG: dict[str, Any] = {
 }
 
 
-def detect_project_config(project_root: Path) -> dict[str, Any]:
-    """Pick the right project config. v0.1: read CLAUDE.md for fingerprints."""
-    claude_md = project_root / "CLAUDE.md"
-    if claude_md.exists():
+def load_project_config(project_root: Path) -> dict[str, Any]:
+    """Load .daily-brief.yaml from project_root; fall back to GENERIC_CONFIG."""
+    yaml_path = project_root / ".daily-brief.yaml"
+    if yaml_path.exists():
         try:
-            content = claude_md.read_text(encoding="utf-8", errors="ignore")
-            if "moon_baby" in content:
-                return MOON_BABY_CONFIG
-        except OSError:
-            pass
-    return GENERIC_CONFIG
+            with yaml_path.open(encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+            # YAML loads sequences as lists; file_extensions must be a tuple
+            # for str.endswith() compatibility.
+            if "file_extensions" in data:
+                data["file_extensions"] = tuple(data["file_extensions"])
+            return data
+        except Exception as exc:  # noqa: BLE001
+            print(f"[daily_brief] warning: could not load {yaml_path}: {exc}", flush=True)
+    return dict(GENERIC_CONFIG)
 
 
 # ---------------------------------------------------------------------------
@@ -875,10 +816,10 @@ def main() -> int:
         return 1
 
     _init_paths(args.project)
-    config = detect_project_config(REPO_ROOT)
+    config = load_project_config(REPO_ROOT)
 
     print(f"[daily_brief] project: {REPO_ROOT}")
-    print(f"[daily_brief] config: {config['name']}")
+    print(f"[daily_brief] config: {config.get('name', 'generic')}")
     print(f"[daily_brief] gathering state…")
     state = gather_state(config)
 

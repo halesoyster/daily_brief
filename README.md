@@ -62,12 +62,44 @@ If any of the three email vars is missing, `--email` is a graceful no-op (logs a
 
 ### Per-project config
 
-Today (v0.1): when daily_brief is pointed at a project, it **auto-detects** project type by reading the project's `CLAUDE.md` and adjusts:
+Add a `.daily-brief.yaml` to your project root. If none is found, daily_brief falls back to a generic mode (all common file types, no curriculum, plain audience framing).
 
-- **moon_baby project** (CLAUDE.md mentions `moon_baby`) — uses the moon_baby-specific curriculum, sprint state file paths, and audience framing.
-- **Anything else** — generic developer-reading-their-own-codebase mode.
+```yaml
+# .daily-brief.yaml — full schema, all fields optional except name
 
-A real config file (YAML) is planned for v0.2. Until then, generalizing beyond moon_baby means editing the `MOON_BABY_DEFAULTS` and `GENERIC_DEFAULTS` dicts in `daily_brief.py`.
+name: my_project                    # shown in logs + brief footer
+
+file_extensions:                    # file types counted for spotlight rotation
+  - .py
+  - .sql
+  - .md
+
+sprint_state_files:                 # docs surfaced verbatim as sprint context
+  - docs/sprint-brief.md            # relative to project root; omit if none
+
+roadmap_file: docs/roadmap.md       # single roadmap doc to excerpt; omit if none
+
+audience_description: >             # shapes the system prompt
+  A developer familiar with Python and SQL, growing into
+  FastAPI and async patterns.
+
+goal_description: >                 # also shapes the system prompt
+  interview prep disguised as a morning standup
+
+curriculum:                         # fallback spotlight rotation (oldest-first)
+  - id: schema                      # unique id used for coverage tracking
+    label: "Database schema"
+    files:
+      - data/schema.sql
+
+  - id: api
+    label: "API layer"
+    files:
+      - api/main.py
+      - api/db.py
+```
+
+The `curriculum` list is only used as a fallback when no files changed in the last 24 hours match your `file_extensions`. If `curriculum` is empty and there are no recent changes, the brief skips the spotlight section gracefully.
 
 ---
 
@@ -115,9 +147,9 @@ tail -f ~/Library/Logs/daily-brief/run.log
 
 ## Status
 
-- **v0.1:** Extraction from `moon_baby/scripts/morning_brief.py`. Auto-detects moon_baby vs. generic projects. Email delivery via Gmail SMTP.
-- **v0.2 (next):** YAML per-project config file (`.daily-brief.yaml`) replacing hardcoded defaults. Allows any project to configure curriculum, sprint state files, and audience framing without editing `daily_brief.py`.
-- **v0.3 (done):** Standalone `run.sh` + `install.sh` + plist template. LaunchAgent cut over from moon_baby's in-tree script. morning_brief.py removed from moon_baby.
+- **v0.1:** Extraction from `moon_baby/scripts/morning_brief.py`. Email delivery via Gmail SMTP.
+- **v0.2 (done):** YAML per-project config file (`.daily-brief.yaml`). Any project can configure curriculum, sprint state files, and audience framing without editing `daily_brief.py`.
+- **v0.3 (done):** Standalone `run.sh` + `install.sh` + plist template. LaunchAgent cut over from moon_baby's in-tree script. `morning_brief.py` removed from moon_baby.
 
 ---
 
