@@ -14,7 +14,7 @@ Structure per brief (~60/25/15):
   - What's next (15%): brief orientation toward the next concrete piece.
 
 Rotation: spotlight picked from files touched in the last 24h, weighted
-against the coverage log (.brief/coverage.json) to avoid rehash. Falls
+against the coverage log (brief/coverage.json) to avoid rehash. Falls
 back to a curated curriculum list when no fresh changes warrant a spotlight.
 
 Run:
@@ -93,7 +93,7 @@ def load_project_config(project_root: Path) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 REPO_ROOT: Path = Path.cwd()
-BRIEF_DIR: Path = REPO_ROOT / ".brief"
+BRIEF_DIR: Path = REPO_ROOT / "brief"
 COVERAGE_FILE: Path = BRIEF_DIR / "coverage.json"
 TODAY = datetime.now().date()
 
@@ -102,7 +102,7 @@ def _init_paths(project_root: Path) -> None:
     """Populate the module-level path globals from --project arg."""
     global REPO_ROOT, BRIEF_DIR, COVERAGE_FILE
     REPO_ROOT = project_root.resolve()
-    BRIEF_DIR = REPO_ROOT / ".brief"
+    BRIEF_DIR = REPO_ROOT / "brief"
     COVERAGE_FILE = BRIEF_DIR / "coverage.json"
 
 
@@ -308,7 +308,7 @@ def gather_roadmap_snippet(config: dict[str, Any]) -> str:
 
 
 def load_coverage_log() -> list[dict[str, Any]]:
-    """Read .brief/coverage.json. Returns [] if missing or malformed."""
+    """Read brief/coverage.json. Returns [] if missing or malformed."""
     if not COVERAGE_FILE.exists():
         return []
     try:
@@ -358,7 +358,7 @@ def pick_spotlight(
             f for f in changed_files
             if (
                 f.endswith(file_extensions)
-                and not f.startswith(".brief/")
+                and not f.startswith("brief/")
                 and not f.endswith("/__init__.py")
             )
         ]

@@ -14,7 +14,7 @@ Each morning, `daily-brief` against a project produces a self-contained HTML bri
 - **What shipped (25%)** — git activity from the last 24 hours, translated to technical-but-readable language.
 - **What's next (15%)** — short orientation toward the next concrete piece of work.
 
-Spotlight rotation is weighted: files changed in the last 24h are preferred, weighted against a coverage log (`.brief/coverage.json`) so the same area doesn't get rehashed. Falls back to a curated curriculum list when no fresh changes warrant a spotlight.
+Spotlight rotation is weighted: files changed in the last 24h are preferred, weighted against a coverage log (`brief/coverage.json`) so the same area doesn't get rehashed. Falls back to a curated curriculum list when no fresh changes warrant a spotlight.
 
 Cost: roughly one Claude API call per run. Sonnet 4.6, ~$0.10/day.
 
@@ -122,7 +122,7 @@ daily-brief --project ~/Projects/moon_baby --email --no-open
 daily-brief --dry-run
 ```
 
-Brief HTML is saved to `<project>/.brief/<YYYY-MM-DD>.html`. Coverage log at `<project>/.brief/coverage.json`.
+Brief HTML is saved to `<project>/brief/<YYYY-MM-DD>.html`. Coverage log at `<project>/brief/coverage.json`.
 
 ---
 

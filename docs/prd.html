@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>daily_brief v0.4 — Browser-first PRD</title>
+<style>
+  :root {
+    --bg: #FBFAF7;
+    --bg-soft: #F3EFE6;
+    --ink: #1c1c1c;
+    --ink-soft: #5a5a5a;
+    --accent: #7a5a3a;
+    --rule: #d8d0c2;
+    --code-bg: #f0ebde;
+    --max-width: 720px;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Charter", "Georgia", serif;
+    font-size: 18px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  main {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 64px 28px 96px;
+  }
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  header .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.2;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  header .meta {
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  header .meta span strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin: 56px 0 14px;
+    letter-spacing: -0.005em;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+  }
+  h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 32px 0 8px;
+    color: var(--ink);
+  }
+  p { margin: 0 0 16px; }
+  ul, ol { padding-left: 22px; margin: 0 0 18px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { font-style: italic; color: var(--ink-soft); }
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2.5px;
+  }
+  a:hover { color: var(--ink); }
+
+  code {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    padding: 1.5px 6px;
+    border-radius: 3px;
+  }
+  pre {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 0 20px;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 22px 0;
+    padding: 4px 0 4px 18px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 48px 0;
+  }
+
+  .callout {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 22px 0;
+    border-left: 3px solid var(--accent);
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 24px;
+    font-size: 15px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--bg-soft);
+  }
+  td code { font-size: 0.85em; }
+
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--accent);
+    border-radius: 3px;
+  }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="eyebrow">Product Requirements</div>
+  <h1>daily_brief v0.4 — Browser-first</h1>
+  <div class="meta">
+    <span><strong>Status:</strong> Proposed</span>
+    <span><strong>Date:</strong> 2026-05-24</span>
+    <span><strong>Author:</strong> Hale (with Claude Code)</span>
+    <span><strong>Scope:</strong> small (one engineer, one evening)</span>
+  </div>
+</header>
+
+<h2>Why this version exists</h2>
+
+<p>daily_brief was built as a morning-email habit. The thesis was: a push notification at 9am pulls the developer back into the project. That works, but email has three structural problems for this use case:</p>
+
+<ol>
+  <li><strong>Ephemeral.</strong> Once read, a brief is buried under newer mail by the next morning. There's no skim-back-to-Tuesday motion.</li>
+  <li><strong>Search-poor.</strong> Gmail search on technical content is unreliable. <em>"What was the spotlight on the RLS work three days ago?"</em> is hard to recover.</li>
+  <li><strong>No comparison surface.</strong> Looking at two days' briefs side by side, or scrolling through a week, requires juggling email tabs.</li>
+</ol>
+
+<p>Meanwhile, daily_brief has been quietly writing perfectly good HTML to <code>.brief/{date}.html</code> since v0.1. The archive is right there. The user just can't reach it without remembering the filename and typing it into a browser bar.</p>
+
+<div class="callout">
+  <div class="label">The shift</div>
+  <p><strong>v0.4 makes the local HTML archive the primary surface. Email becomes opt-in.</strong></p>
+</div>
+
+<h2>The thesis, in one sentence</h2>
+
+<blockquote>The artifact daily_brief produces is more valuable than the notification it sends — so make the artifact bookmarkable and the notification optional.</blockquote>
+
+<h2>What changes</h2>
+
+<h3>1. Per-day JSON sidecar</h3>
+
+<p>Every successful brief render writes a metadata file alongside the HTML:</p>
+
+<pre><code>.brief/2026-05-24.html   ← the brief itself (unchanged)
+.brief/2026-05-24.json   ← new</code></pre>
+
+<p>Contents:</p>
+
+<pre><code>{
+  "date": "2026-05-24",
+  "headline": "RLS enforcement at the connection layer",
+  "spotlight_title": "Middleware: set_rls_context()",
+  "spotlight_label": "API middleware"
+}</code></pre>
+
+<p><strong>Why a sidecar instead of parsing the HTML or appending to a rolling JSON file:</strong></p>
+
+<ul>
+  <li>HTML parsing is fragile across rendering changes.</li>
+  <li>A rolling file (e.g., <code>index.json</code>) creates read-modify-write race conditions and merge headaches.</li>
+  <li>Per-day sidecars are atomic, self-contained, and trivially globbable.</li>
+</ul>
+
+<h3>2. <code>.brief/latest.html</code></h3>
+
+<p>A stable bookmark target that always shows today's brief. Implementation: a meta-refresh redirect, regenerated on every run.</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;meta http-equiv="refresh" content="0; url=2026-05-24.html"&gt;</code></pre>
+
+<p><strong>Why meta-refresh and not a symlink or a copy:</strong></p>
+
+<ul>
+  <li>Symlinks are FS-fragile, render oddly in some viewers, and break under sync tools.</li>
+  <li>A copy doubles disk usage and gets out of sync if the writer is interrupted.</li>
+  <li>A four-line HTML redirect is the simplest, most portable thing that works.</li>
+</ul>
+
+<h3>3. <code>.brief/index.html</code></h3>
+
+<p>Globs every <code>*.json</code> sidecar in <code>.brief/</code>, sorts newest-first, renders a list page. Each row shows date, headline, and a link to the brief. Becomes the primary bookmark.</p>
+
+<h3>4. Cron behavior change</h3>
+
+<p>The launchd job (<code>com.daily-brief.plist</code>) currently runs with <code>--no-open --email</code>. v0.4 drops <code>--email</code> from the cron invocation.</p>
+
+<ul>
+  <li><strong>Default cron path:</strong> <code>daily-brief --project &lt;path&gt; --no-open</code>. Writes the brief, JSON, latest, and index. No email.</li>
+  <li><strong>Manual email:</strong> <code>daily-brief --email</code> still works for the days you actually want a push.</li>
+</ul>
+
+<h2>What stays the same</h2>
+
+<p>Everything that's working today. Specifically:</p>
+
+<ul>
+  <li>Brief generation pipeline (git activity gathering, spotlight selection, Claude call, HTML render) — untouched.</li>
+  <li>Coverage rotation logic — untouched.</li>
+  <li><code>.daily-brief.yaml</code> schema — untouched.</li>
+  <li><code>--email</code> and <code>--no-open</code> flag semantics — preserved.</li>
+  <li>Per-day HTML filename and location — unchanged.</li>
+</ul>
+
+<p>v0.4 is purely additive on the output side and one flag-flip on the cron side. No breaking changes to existing briefs or configs.</p>
+
+<h2>Bookmark experience after v0.4</h2>
+
+<p>Two URLs to memorize:</p>
+
+<ul>
+  <li><code>file:///…/.brief/latest.html</code> → today's brief, always.</li>
+  <li><code>file:///…/.brief/index.html</code> → full archive, newest first.</li>
+</ul>
+
+<p>These are local files. No hosting, no auth, no privacy concerns about project content leaving the laptop. The archive is grep-able from the filesystem and version-controllable per-project if any project wants to.</p>
+
+<h2>What this isn't</h2>
+
+<p>Naming the boundary so v0.5 doesn't drift:</p>
+
+<table>
+  <thead>
+    <tr><th>daily_brief is</th><th>daily_brief isn't</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Morning context restoration for a developer</td><td>A CI report (no test results, no build status)</td></tr>
+    <tr><td>Single-author, single-project</td><td>A team standup substitute</td></tr>
+    <tr><td>Educational — "explain your choices"</td><td>A code review tool (no quality or security judgments)</td></tr>
+    <tr><td>Lightweight (~$0.10/day, one API call)</td><td>A full project-history tool — coverage rotation is local heuristic, not search</td></tr>
+  </tbody>
+</table>
+
+<p>The "interview prep disguised as a morning standup" framing in the README is about <em>content quality</em> — explain your choices like you would to a hiring manager — not about Q&amp;A generation.</p>
+
+<h2>Acceptance criteria</h2>
+
+<ul class="checklist">
+  <li><code>.brief/{date}.json</code> written after every successful brief render.</li>
+  <li><code>.brief/latest.html</code> regenerated to point at today's brief at the end of every run.</li>
+  <li><code>.brief/index.html</code> regenerated listing all briefs newest-first; renders cleanly even when some old briefs lack a JSON sidecar (degrades to date-only entry).</li>
+  <li>Cron runs with <code>--no-open</code> and no implicit <code>--email</code>.</li>
+  <li>Manual <code>daily-brief --email</code> still works end-to-end.</li>
+  <li>README updated to describe the browser-first flow as the primary path.</li>
+</ul>
+
+<h2>Out of scope for v0.4</h2>
+
+<p>Deferred deliberately, captured here so they don't get lost:</p>
+
+<ul>
+  <li><strong>Search across briefs.</strong> Useful, requires JS in the index page. v0.5.</li>
+  <li><strong>Cross-project index.</strong> "Show me yesterday across moon_baby + daily_brief + product-page." Useful once Hale has 3+ active projects on the brief habit. v0.5+.</li>
+  <li><strong>Tag/filter by spotlight area</strong> in the index. Nice-to-have. v0.5+.</li>
+  <li><strong>Backfilling JSON sidecars</strong> for existing briefs. One-time migration; will be a small <code>--backfill-index</code> flag or a separate script, not part of v0.4 default flow.</li>
+</ul>
+
+<h2>Open questions</h2>
+
+<p>Resolved during planning (2026-05-24):</p>
+
+<table>
+  <thead>
+    <tr><th>Question</th><th>Resolution</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>latest.html</code> mechanism — symlink, copy, or redirect?</td><td>Meta-refresh redirect.</td></tr>
+    <tr><td>Index metadata source — parse HTML, sidecar, or rolling JSON?</td><td>Per-day JSON sidecar.</td></tr>
+    <tr><td>Cron behavior — keep email default or drop it?</td><td>Drop <code>--email</code> from the cron; browser-first.</td></tr>
+    <tr><td>PRD before or after code?</td><td>PRD first. (This doc.)</td></tr>
+  </tbody>
+</table>
+
+<p>Nothing currently open. If anything surfaces during implementation, it gets added here and re-resolved before the code lands.</p>
+
+<h2>Why this PRD is also rendered as HTML</h2>
+
+<p>Independent experiment running alongside this work: <strong>does an HTML-rendered PRD outperform a markdown one for both human readability and Claude Code comprehension?</strong></p>
+
+<p>The markdown version (<code>prd.md</code>) is the source of truth. The HTML version (this file) is the same content, styled. After v0.4 lands, both will exist in <code>docs/</code>, and we can run the test: which one does the next reader actually read?</p>
+
+<p>Findings — if interesting — get sent as feedback to the <a href="https://github.com/contextbridge/planbridge">Context Bridge</a> project, since the HTML-PRD pattern is something their tool could meaningfully engage with.</p>
+
+<footer>
+  daily_brief · <code>docs/prd.html</code> · rendered companion to <code>prd.md</code>
+</footer>
+
+</main>
+</body>
+</html>
